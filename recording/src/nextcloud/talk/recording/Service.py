@@ -188,8 +188,10 @@ class Service:
             env = self._display.env()
             env['PULSE_SINK'] = audioSinkIndex
 
+            browser = config.getBrowserForRecording()
+
             self._logger.debug("Starting participant")
-            self._participant = Participant('firefox', self.backend, width, height, env, self._logger)
+            self._participant = Participant(browser, self.backend, width, height, env, self._logger)
 
             self._logger.debug("Joining call")
             self._participant.joinCall(self.token)
