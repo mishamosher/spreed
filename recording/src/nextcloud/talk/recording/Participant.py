@@ -275,7 +275,7 @@ class SeleniumHelper:
         # default, but just in case.
         options.set_capability('webSocketUrl', True)
 
-        options.set_argument('--use-fake-ui-for-media-stream')
+        options.add_argument('--use-fake-ui-for-media-stream')
 
         # Allow to play media without user interaction.
         options.add_argument('--autoplay-policy=no-user-gesture-required')
