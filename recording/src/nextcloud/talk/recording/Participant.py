@@ -265,7 +265,7 @@ class SeleniumHelper:
                     the browser in.
         """
 
-        startCommon()
+        self.startCommon()
 
         options = ChromeOptions()
 
