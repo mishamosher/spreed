@@ -208,7 +208,7 @@ class SeleniumHelper:
             # created in "/tmp".
             self.driver.quit()
 
-    def startCommon():
+    def startCommon(self):
         if disk_usage('/tmp').free < 134217728:
             self._logger.warning('Less than 128 MiB available in "/tmp", strange failures may occur')
 
@@ -222,7 +222,7 @@ class SeleniumHelper:
                     the browser in.
         """
 
-        startCommon()
+        self.startCommon()
 
         options = FirefoxOptions()
 
