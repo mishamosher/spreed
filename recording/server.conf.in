@@ -109,3 +109,9 @@
 
 # The extension of the file for audio and video recordings.
 #extensionvideo = .webm
+
+[recording]
+# Browser to use for recordings.
+# Allowed values: firefox, chromium
+# Defaults to firefox
+# browser = firefox
