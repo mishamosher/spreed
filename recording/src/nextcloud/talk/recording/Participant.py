@@ -33,8 +33,14 @@ from datetime import datetime
 from secrets import token_urlsafe
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.webdriver import WebDriver as ChromeDriver
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.firefox.webdriver import WebDriver as FirefoxDriver
 from selenium.webdriver.support.wait import WebDriverWait
+
 from shutil import disk_usage
 from time import sleep
 
@@ -202,6 +208,10 @@ class SeleniumHelper:
             # created in "/tmp".
             self.driver.quit()
 
+    def startCommon()
+        if disk_usage('/tmp').free < 134217728:
+            self._logger.warning('Less than 128 MiB available in "/tmp", strange failures may occur')
+
     def startFirefox(self, width, height, env):
         """
         Starts a Firefox instance.
@@ -212,7 +222,9 @@ class SeleniumHelper:
                     the browser in.
         """
 
-        options = webdriver.FirefoxOptions()
+        startCommon()
+
+        options = FirefoxOptions()
 
         # "webSocketUrl" is needed for BiDi; this should be set already by
         # default, but just in case.
@@ -232,14 +244,53 @@ class SeleniumHelper:
         options.add_argument(f'--width={width}')
         options.add_argument(f'--height={height}')
 
-        if disk_usage('/tmp').free < 134217728:
-            self._logger.warning('Less than 128 MiB available in "/tmp", strange failures may occur')
-
         service = FirefoxService(
             env=env,
         )
 
-        self.driver = webdriver.Firefox(
+        self.driver = FirefoxDriver(
+            options=options,
+            service=service,
+        )
+
+        self.bidiLogsHelper = BiDiLogsHelper(self.driver, self._parentLogger)
+
+    def startChromium(self, width, height, env):
+        """
+        Starts a Chromium instance.
+
+        :param width: the width of the browser window.
+        :param height: the height of the browser window.
+        :param env: the environment variables, including the display to start
+                    the browser in.
+        """
+
+        startCommon()
+
+        options = ChromeOptions()
+
+        options.binary_location = '/usr/bin/chromium-browser'
+
+        # "webSocketUrl" is needed for BiDi; this should be set already by
+        # default, but just in case.
+        options.set_capability('webSocketUrl', True)
+
+        options.set_argument('--use-fake-ui-for-media-stream')
+
+        # Allow to play media without user interaction.
+        options.add_argument('--autoplay-policy=no-user-gesture-required')
+
+        options.add_argument('--kiosk')
+        options.add_argument(f'--window-size={width},{height}')
+        options.add_argument('--disable-infobars')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--no-sandbox')
+
+        service = ChromeService(
+            env=env,
+        )
+
+        self.driver = ChromeDriver(
             options=options,
             service=service,
         )
@@ -420,6 +471,8 @@ class Participant():
 
         if browser == 'firefox':
             self.seleniumHelper.startFirefox(width, height, env)
+        elif browser == 'chromium':
+            self.seleniumHelper.startChromium(width, height, env)
         else:
             raise Exception('Invalid browser: ' + browser)
 
