@@ -208,7 +208,7 @@ class SeleniumHelper:
             # created in "/tmp".
             self.driver.quit()
 
-    def startCommon()
+    def startCommon():
         if disk_usage('/tmp').free < 134217728:
             self._logger.warning('Less than 128 MiB available in "/tmp", strange failures may occur')
 
