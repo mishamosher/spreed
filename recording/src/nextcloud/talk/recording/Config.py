@@ -236,4 +236,12 @@ class Config:
         """
         return self._configParser.get('ffmpeg', 'extensionvideo', fallback='.webm')
 
+    def getBrowserForRecording():
+        """
+        Returns the browser identifier that will be used for recordings.
+
+        Defaults to "firefox".
+        """
+        return self._configParser.get('recording', 'browser', fallback='firefox')
+
 config = Config()
