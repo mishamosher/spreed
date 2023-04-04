@@ -116,13 +116,13 @@ class RecordingServiceTest extends TestCase {
 	}
 
 	/** @dataProvider dataValidateFileFormat */
-	public function testValidateFileFormat(string $fileRealPath, string $exceptionMessage):void {
+	public function testValidateFileFormat(string $fileName, string $fileRealPath, string $exceptionMessage):void {
 		if ($exceptionMessage) {
 			$this->expectExceptionMessage($exceptionMessage);
 		} else {
 			$this->expectNotToPerformAssertions();
 		}
-		$this->recordingService->validateFileFormat($fileRealPath);
+		$this->recordingService->validateFileFormat($fileName, $fileRealPath);
 	}
 
 	public function dataValidateFileFormat(): array {
