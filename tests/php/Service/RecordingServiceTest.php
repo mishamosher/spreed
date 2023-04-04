@@ -127,8 +127,9 @@ class RecordingServiceTest extends TestCase {
 
 	public function dataValidateFileFormat(): array {
 		return [
+            # file_invalid_path
+            ['', '', 'file_invalid_path'],
 			# file_mimetype
-			['', '', 'file_mimetype'],
 			['', realpath(__DIR__ . '/../../../img/app.svg'), 'file_mimetype'],
 			['name.ogg', realpath(__DIR__ . '/../../../img/app.svg'), 'file_mimetype'],
 			# file_extension
@@ -155,7 +156,7 @@ class RecordingServiceTest extends TestCase {
 		]);
 		$participant = new Participant($room, $attendee, null);
 
-		$actual = $this->recordingService->getResourceFromFileArray($file, $room, $participant);
+		$actual = stream_get_contents($this->recordingService->getResourceFromFileArray($file, $room, $participant));
 		$this->assertEquals($expected, $actual);
 	}
 
