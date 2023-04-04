@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 /**
- * @copyright Copyright (c) 2022 Vitor Mattos <vitor@php.rio>
+ * @copyright Copyright (c) 2022, Vitor Mattos <vitor@php.rio>
+ * @copyright Copyright (c) 2023, Elmer Miroslav Mosher Golovin (miroslav@mishamosher.com)
  *
  * @author Vitor Mattos <vitor@php.rio>
  *
