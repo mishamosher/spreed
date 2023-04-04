@@ -127,8 +127,8 @@ class RecordingServiceTest extends TestCase {
 
 	public function dataValidateFileFormat(): array {
 		return [
-            # file_invalid_path
-            ['', '', 'file_invalid_path'],
+			# file_invalid_path
+			['', '', 'file_invalid_path'],
 			# file_mimetype
 			['', realpath(__DIR__ . '/../../../img/app.svg'), 'file_mimetype'],
 			['name.ogg', realpath(__DIR__ . '/../../../img/app.svg'), 'file_mimetype'],

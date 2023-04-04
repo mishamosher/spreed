@@ -178,10 +178,10 @@ class RecordingService {
 	}
 
 	public function validateFileFormat(string $fileName, string $fileRealPath): void {
-        if (!is_file($fileRealPath)) {
-            $this->logger->warning("An invalid file path ($fileRealPath) was provided");
-            throw new InvalidArgumentException('file_invalid_path');
-        }
+		if (!is_file($fileRealPath)) {
+			$this->logger->warning("An invalid file path ($fileRealPath) was provided");
+			throw new InvalidArgumentException('file_invalid_path');
+		}
 
 		$mimeType = $this->mimeTypeDetector->detectContent($fileRealPath);
 		$allowed = self::DEFAULT_ALLOWED_RECORDING_FORMATS;
