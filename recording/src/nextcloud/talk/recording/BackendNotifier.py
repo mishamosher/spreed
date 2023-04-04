@@ -27,9 +27,11 @@ import hmac
 import json
 import logging
 import os
+import requests
 import ssl
 from nextcloud.talk import recording
 from secrets import token_urlsafe
+from requests_toolbelt import MultipartEncoder
 from urllib.request import Request, urlopen
 from urllib3 import encode_multipart_formdata
 
@@ -190,28 +192,25 @@ def uploadRecording(backend, token, fileName, owner):
 
     url = backend.rstrip('/') + '/ocs/v2.php/apps/spreed/api/v1/recording/' + token + '/store'
 
-    fileContents = None
-    with open(fileName, 'rb') as file:
-        fileContents = file.read()
-
     # Plain values become arguments, while tuples become files; the body used to
     # calculate the checksum is empty.
     data = {
         'owner': owner,
-        'file': (os.path.basename(fileName), fileContents),
+        'file': (os.path.basename(fileName), open(fileName, 'rb')),
     }
-    data, contentType = encode_multipart_formdata(data)
+
+    multipartEncoder = MultipartEncoder(data)
 
     random, checksum = getRandomAndChecksum(backend, token.encode())
 
     headers = {
-        'Content-Type': contentType,
+        'Content-Type': multipartEncoder.content_type,
         'OCS-ApiRequest': 'true',
         'Talk-Recording-Random': random,
         'Talk-Recording-Checksum': checksum,
         'User-Agent': recording.USER_AGENT,
     }
 
-    uploadRequest = Request(url, data, headers)
+    uploadRequest = Request(url, multipartEncoder, headers)
 
     doRequest(backend, uploadRequest)
