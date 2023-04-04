@@ -27,12 +27,12 @@ import hmac
 import json
 import logging
 import os
-import requests
 import ssl
 from nextcloud.talk import recording
-from secrets import token_urlsafe
+from requests import Request as RequestsRequest, Session
 from requests_toolbelt import MultipartEncoder
-from urllib.request import Request, urlopen
+from secrets import token_urlsafe
+from urllib.request import Request as UrllibRequest, urlopen
 from urllib3 import encode_multipart_formdata
 
 from .Config import config
@@ -61,16 +61,26 @@ def doRequest(backend, request, retries=3):
     :param backend: the backend to send the request to.
     :param request: the request to send.
     :param retries: the number of times to retry in case of failure.
+    :param library: the library to use for the request. Possible values are: 'urllib', 'requests'.
     """
-    context = None
-
-    if config.getBackendSkipVerify(backend):
-        context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
+    backendSkipVerify = config.getBackendSkipVerify(backend)
 
     try:
-        urlopen(request, context=context)
+        if isinstance(request, UrllibRequest):
+            context = None
+
+            if backendSkipVerify:
+                context = ssl.create_default_context()
+                context.check_hostname = False
+                context.verify_mode = ssl.CERT_NONE
+
+            urlopen(request, context=context)
+        elif isinstance(request, RequestsRequest):
+            session = Session()
+            prepped = session.prepare_request(request)
+            session.send(prepped, verify=not backendSkipVerify)
+        else:
+            raise Exception(f'Invalid request type: {type(request)}')
     except Exception as exception:
         if retries > 1:
             logger.exception(f"Failed to send message to backend, {retries} retries left!")
@@ -104,7 +114,7 @@ def backendRequest(backend, data):
         'User-Agent': recording.USER_AGENT,
     }
 
-    backendRequest = Request(url, data, headers)
+    backendRequest = UrllibRequest(url, data, headers)
 
     doRequest(backend, backendRequest)
 
@@ -211,6 +221,6 @@ def uploadRecording(backend, token, fileName, owner):
         'User-Agent': recording.USER_AGENT,
     }
 
-    uploadRequest = Request(url, multipartEncoder, headers)
+    uploadRequest = RequestsRequest('POST', url, headers, data=multipartEncoder)
 
     doRequest(backend, uploadRequest)
