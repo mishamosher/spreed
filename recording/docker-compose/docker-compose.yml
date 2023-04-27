@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+
+  nextcloud-talk-recording:
+    build:
+      context: ..
+      dockerfile: ./docker-compose/Dockerfile
+    init: true
+    shm_size: '2gb'
+    restart: on-failure
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      - nextcloud-talk-recording
+
+networks:
+  nextcloud-talk-recording:
